@@ -1,16 +1,8 @@
-package ru.javabegin.micro.planner.entity;
+package ru.javabegin.micro.planner.entity
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import jakarta.persistence.*;
-import java.io.Serializable;
-import java.util.Objects;
+import jakarta.persistence.*
+import java.io.Serializable
+import java.util.*
 
 
 /*
@@ -19,56 +11,50 @@ import java.util.Objects;
 может использовать для своих задач
 содержит статистику по каждой категории
 
- */
-
+*/
 @Entity
 @Table(name = "category", schema = "todo", catalog = "planner_todo")
-@NoArgsConstructor
-@AllArgsConstructor
-@Setter
-@Getter
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Category implements Serializable {
-
+class Category : Serializable {
     // указываем, что поле заполняется в БД
     // нужно, когда добавляем новый объект и он возвращается уже с новым id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long id;
+    var id: Long? = null
 
-    private String title;
+    var title: String? = null
 
-    @Column(name = "completed_count", updatable = false) // т.к. это поле высчитывается автоматически в триггерах - вручную его не обновляем (updatable = false)
-    private Long completedCount;
+    @Column(
+        name = "completed_count",
+        updatable = false
+    ) // т.к. это поле высчитывается автоматически в триггерах - вручную его не обновляем (updatable = false)
+    var completedCount: Long? = null
 
-    @Column(name = "uncompleted_count", updatable = false) // т.к. это поле высчитывается автоматически в триггерах - вручную его не обновляем (updatable = false)
-    private Long uncompletedCount;
+    @Column(
+        name = "uncompleted_count",
+        updatable = false
+    ) // т.к. это поле высчитывается автоматически в триггерах - вручную его не обновляем (updatable = false)
+    var uncompletedCount: Long? = null
 
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", referencedColumnName = "id") // по каким полям связаны эти 2 объекта (foreign key)
-//    private User user;
-
+    //    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    //    @ManyToOne(fetch = FetchType.LAZY)
+    //    @JoinColumn(name = "user_id", referencedColumnName = "id") // по каким полям связаны эти 2 объекта (foreign key)
+    //    private User user;
     @Column(name = "user_id")
-    private Long userId;
+    var userId: Long? = null
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return id.equals(category.id);
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val category = o as Category
+        return id == category.id
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    override fun hashCode(): Int {
+        return Objects.hash(id)
     }
 
-    @Override
-    public String toString() {
-        return title;
+    override fun toString(): String {
+        return title!!
     }
 }

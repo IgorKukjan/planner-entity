@@ -1,61 +1,44 @@
-package ru.javabegin.micro.planner.entity;
+package ru.javabegin.micro.planner.entity
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import jakarta.persistence.*;
-import java.util.Objects;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.persistence.*
+import java.util.*
 
 /*
 
 Все доступные роли, которые будут привязаны к пользователю
 
 */
-
-
 @Entity
 @Table(name = "role_data", schema = "users", catalog = "planner_users")
-@NoArgsConstructor
-@AllArgsConstructor
-@Setter
-@Getter
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class Role {
+class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    var name: String? = null // название роли
 
-	private String name; // название роли
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_role",
+        joinColumns = [JoinColumn(name = "role_id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id")]
+    )
+    var users: Set<User>? = null
 
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_role",
-			joinColumns = @JoinColumn(name = "role_id"),
-			inverseJoinColumns = @JoinColumn(name = "user_id"))
-	private Set<User> users;
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val role = o as Role
+        return id == role.id
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Role role = (Role) o;
-		return id.equals(role.id);
-	}
+    override fun hashCode(): Int {
+        return Objects.hash(id)
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
-
-	@Override
-	public String toString() {
-		return name;
-	}
+    override fun toString(): String {
+        return name!!
+    }
 }

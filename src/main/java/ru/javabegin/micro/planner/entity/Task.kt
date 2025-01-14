@@ -1,87 +1,65 @@
-package ru.javabegin.micro.planner.entity;
+package ru.javabegin.micro.planner.entity
 
+import jakarta.persistence.*
+import org.hibernate.type.NumericBooleanConverter
+import java.io.Serializable
+import java.util.*
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
-import jakarta.persistence.*;
-import org.hibernate.type.NumericBooleanConverter;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
 
 /*
 
 задачи пользователя
 
- */
-
+*/
 @Entity
 @Table(name = "task", schema = "todo", catalog = "planner_todo")
-@NoArgsConstructor
-@AllArgsConstructor
-@Setter
-@Getter
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Task implements Serializable {
-
+class Task : Serializable {
     // указываем, что поле заполняется в БД
     // нужно, когда добавляем новый объект и он возвращается уже с новым id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long id;
+    var id: Long? = null
 
-    private String title;
+    var title: String? = null
 
-//    @Type(type = "org.hibernate.type.NumericBooleanType") // для автоматической конвертации числа в true/false
-    @Convert(converter = NumericBooleanConverter.class)
-    private Boolean completed; // 1 = true, 0 = false
+    //    @Type(type = "org.hibernate.type.NumericBooleanType") // для автоматической конвертации числа в true/false
+    @Convert(converter = NumericBooleanConverter::class)
+    var completed: Boolean? = null // 1 = true, 0 = false
 
     @Column(name = "task_date") // в БД поле называется task_date, т.к. нельзя использовать системное имя date
-    private Date taskDate;
+    var taskDate: Date? = null
 
     // задача может иметь только один приоритет (с обратной стороны - один и тот же приоритет может быть использоваться в множестве задач)
     @ManyToOne
     @JoinColumn(name = "priority_id", referencedColumnName = "id") // по каким полям связывать (foreign key)
-    private Priority priority;
+    var priority: Priority? = null
 
     // задача может иметь только одну категорию (с обратной стороны - одна и та же категория может быть использоваться в множестве задач)
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id") // по каким полям связывать (foreign key)
-    private Category category;
+    var category: Category? = null
 
 
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", referencedColumnName = "id") // по каким полям связывать (foreign key)
-//    private User user; // для какого пользователя задача
-
+    //    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    //    @ManyToOne(fetch = FetchType.LAZY)
+    //    @JoinColumn(name = "user_id", referencedColumnName = "id") // по каким полям связывать (foreign key)
+    //    private User user; // для какого пользователя задача
     @Column(name = "user_id")
-    private Long userId;
+    var userId: Long? = null
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
-        return id.equals(task.id);
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val task = o as Task
+        return id == task.id
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    override fun hashCode(): Int {
+        return Objects.hash(id)
     }
 
-    @Override
-    public String toString() {
-        return title;
+    override fun toString(): String {
+        return title!!
     }
 }
