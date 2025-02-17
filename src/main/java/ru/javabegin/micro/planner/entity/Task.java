@@ -64,7 +64,7 @@ public class Task implements Serializable {
 //    private User user; // для какого пользователя задача
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
 
     @Override
